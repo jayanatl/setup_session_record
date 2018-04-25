@@ -11,40 +11,26 @@
 #           jayanatl@gmail.com                  Initial copy        (2018-04-25)
 ################################################################################
 # Variables
-loc="/tmp/jayan_setupScreenRecord"
 web_loc="sessions"
-
 # Check for normal user
 if [ ${EUID} -eq 0 ]; then
     echo "Error: Run this command as a normal user, with sudo access"
     exit 127
 fi
 
-# Create necessary folders
-mkdir ${loc}
-cd ${loc}
-
 # Install and configure httpd
 sudo yum -y install httpd
-sudo mkdir /var/www/html/${web_loc}
+sudo mkdir -p /var/www/html/${web_loc}/.data
 
 # Download necessary code and configure
-git clone https://github.com/ysangkok/terminal_web_player.git
-sudo cp terminal_web_player/view.* /var/www/html/${web_loc}
-cp terminal_web_player/jsonify.py ~/workshop/bin/jsonify
-chmod u+x ~/workshop/bin/jsonify
-sudo wget https://raw.github.com/chjj/tty.js/d379c6f9/static/term.js -O /var/www/html/${web_loc}/term.js
-
-
+cp -r session* /var/www/html/${web_loc}/
+touch /var/www/html/${web_loc}/index.html
 
 mkdir -p ~/workshop/{bin,sessions}
 grep 'PATH=$PATH:~/workshop/bin' ~/.bashrc || echo 'export PATH=$PATH:~/workshop/bin' >> ~/.bashrc
 export PATH=$PATH:~/workshop/bin
-wget https://raw.githubusercontent.com/jayanatl/setup_session_record/master/start_recording -O ~/workshop/bin/start_recording
-chmod u+x ~/workshop/bin/start_recording
-
-# Change terminal size
-sudo sed -i "s/Terminal(.*, .*)/Terminal(160, 48)/" /var/www/html/sessions/view.js
+cp jsonify start_recording ~/workshop/bin/
+chmod u+x ~/workshop/bin/{jsonify,start_recording}
 
 # Start apache server
 sudo systemctl enable httpd
