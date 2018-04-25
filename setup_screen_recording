@@ -23,7 +23,7 @@ sudo yum -y install httpd
 sudo mkdir -p /var/www/html/${web_loc}/.data
 
 # Download necessary code and configure
-sudo cp -r view* /var/www/html/${web_loc}/
+sudo cp -r view/* /var/www/html/${web_loc}/
 sudo cp index.html /var/www/html/${web_loc}/index.html
 
 mkdir -p ~/workshop/{bin,sessions}

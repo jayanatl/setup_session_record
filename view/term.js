@@ -163,7 +163,6 @@ function Terminal(cols, rows, handler) {
 
   // modes
   this.applicationKeypad = false;
-  this.applicationCursor = false;
   this.originMode = false;
   this.insertMode = false;
   this.wraparoundMode = false;
@@ -213,6 +212,9 @@ function Terminal(cols, rows, handler) {
   while (i--) {
     this.lines.push(this.blankLine());
   }
+
+  // XXX random craziness
+  this.last_cursor = {};
 
   this.tabs;
   this.setupStops();
@@ -360,7 +362,7 @@ Terminal.prototype.open = function() {
 
   this.refresh(0, this.rows - 1);
 
-  Terminal.bindKeys();
+//  Terminal.bindKeys();
   this.focus();
 
   this.startBlink();
@@ -826,7 +828,8 @@ Terminal.prototype.refresh = function(start, end) {
       data = line[i][0];
       ch = line[i][1];
 
-      if (i === x) data = -1;
+//      if (i === x) data = -1;
+      if (i === x) data = 656128;  // underline.
 
       if (data !== attr) {
         if (attr !== this.defAttr) {
@@ -905,7 +908,17 @@ Terminal.prototype.refresh = function(start, end) {
 
 Terminal.prototype.cursorBlink = function() {
   if (Terminal.focus !== this) return;
-  this.cursorState ^= 1;
+
+  if (this.x == this.last_cursor.x && this.y == this.last_cursor.y) {
+    return;
+  }
+
+  if (this.last_cursor.set) {
+    this.refresh(this.last_cursor.y, this.last_cursor_y);
+    this.last_cursor = { set: true, x : this.x, y : this.y };
+  }
+
+  this.cursorState = 1;
   this.refresh(this.y, this.y);
 };
 
@@ -925,13 +938,13 @@ Terminal.prototype.startBlink = function() {
   this._blinker = function() {
     self.cursorBlink();
   };
-  this._blink = setInterval(this._blinker, 500);
+  this._blink = setInterval(this._blinker, 50);
 };
 
 Terminal.prototype.refreshBlink = function() {
   if (!Terminal.cursorBlink) return;
   clearInterval(this._blink);
-  this._blink = setInterval(this._blinker, 500);
+  this._blink = setInterval(this._blinker, 50);
 };
 
 Terminal.prototype.scroll = function() {
@@ -1986,7 +1999,7 @@ Terminal.prototype.keyDown = function(ev) {
       break;
     // left-arrow
     case 37:
-      if (this.applicationCursor) {
+      if (this.applicationKeypad) {
         key = '\x1bOD'; // SS3 as ^[O for 7-bit
         //key = '\x8fD'; // SS3 as 0x8f for 8-bit
         break;
@@ -1995,7 +2008,7 @@ Terminal.prototype.keyDown = function(ev) {
       break;
     // right-arrow
     case 39:
-      if (this.applicationCursor) {
+      if (this.applicationKeypad) {
         key = '\x1bOC';
         break;
       }
@@ -2003,7 +2016,7 @@ Terminal.prototype.keyDown = function(ev) {
       break;
     // up-arrow
     case 38:
-      if (this.applicationCursor) {
+      if (this.applicationKeypad) {
         key = '\x1bOA';
         break;
       }
@@ -2016,7 +2029,7 @@ Terminal.prototype.keyDown = function(ev) {
       break;
     // down-arrow
     case 40:
-      if (this.applicationCursor) {
+      if (this.applicationKeypad) {
         key = '\x1bOB';
         break;
       }
@@ -3184,7 +3197,7 @@ Terminal.prototype.setMode = function(params) {
   } else if (this.prefix === '?') {
     switch (params) {
       case 1:
-        this.applicationCursor = true;
+        this.applicationKeypad = true;
         break;
       case 2:
         this.setgCharset(0, Terminal.charsets.US);
@@ -3382,7 +3395,7 @@ Terminal.prototype.resetMode = function(params) {
   } else if (this.prefix === '?') {
     switch (params) {
       case 1:
-        this.applicationCursor = false;
+        this.applicationKeypad = false;
         break;
       case 3:
         if (this.cols === 132 && this.savedCols) {
@@ -3636,7 +3649,6 @@ Terminal.prototype.softReset = function(params) {
   this.originMode = false;
   this.wraparoundMode = false; // autowrap
   this.applicationKeypad = false; // ?
-  this.applicationCursor = false;
   this.scrollTop = 0;
   this.scrollBottom = this.rows - 1;
   this.curAttr = this.defAttr;
