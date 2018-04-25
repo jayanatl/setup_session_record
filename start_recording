@@ -1,0 +1,17 @@
+#!/bin/bash
+pushd ~/workshop/sessions
+while [[ `tput cols` != "80" || `tput lines` != "24" ]]; do
+    read -p "Resize terminal to 80x24. Press Enter to continue..."
+    watch "tput cols; tput lines"
+done
+read -p "Enter name of the session: " name
+[[ -z ${name} ]] && { echo "Error Session name cannot be empty"}
+[ -f ${name} ] && { echo "Error: File exist with same name"; exit 127; }
+script -t${name}.t ${name}.s
+
+jsonify.py ${name}.s ${name}.t > ${name}
+if [ -f ${name} ] && rm -f ${name}.{s,t}
+
+# append entry to index.html
+# cleanup
+# popd
