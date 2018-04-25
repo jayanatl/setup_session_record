@@ -1,24 +1,44 @@
 #!/bin/bash
+################################################################################
+# About:
+# Script to setup server with apache webserver and setup script to record
+# sessions and automatically update webpage available under
+# (http://<ipaddress>/session)
+#-------------------------------------------------------------------------------
+# Author:
+#           jayanatl@gmail.com
+# Modifications:
+#           jayanatl@gmail.com                  Initial copy        (2018-04-25)
+################################################################################
+# Variables
 web_loc="sessions"
 web_loc="/var/www/html/"${web_loc}
+term_cols="160"
+term_lines="48"
+
+# Sanity check
 which jsonify || { echo "Error: Unable to locate jsonify"; exit 127; }
 
-pushd ~/workshop/sessions
-while [[ `tput cols` != "80" || `tput lines` != "24" ]]; do
+# set terminal properties
+pushd ~/workshop/sessions || { echo "Error: Unable to switch to workshop directory"; exit 127; }
+while [[ `tput cols` != ${term_cols} || `tput lines` != ${term_lines} ]]; do
     read -p "Resize terminal to 80x24. Press Enter to continue..."
     watch "tput cols; tput lines"
 done
+
+# Start script session
 read -p "Enter name of the session: " name
 echo "Name read: ${name}"
 [ -z ${name} ] && { echo "Error: Session name cannot be empty"; exit 127; }
 [ -f ${name} ] && { echo "Error: File exist with same name"; exit 127; }
 script -t${name}.t ${name}.s
 
+# Process session recording
 jsonify ${name}.s ${name}.t > ${name}
 [ -f ${name} ] && rm -f ${name}.{s,t}
-sudo mv ${name} ${web_loc}/
+sudo cp ${name} ${web_loc}/
 
-# append entry to index.html
+# Publish session recording
 cp ${web_loc}/index.html .
 touch index.html
 echo "<br><a href=\"view.html?${name}\">${name}</a>" >> index.html

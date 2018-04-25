@@ -1,14 +1,34 @@
 #!/bin/bash
+################################################################################
+# About:
+# Script to setup server with apache webserver and setup script to record 
+# sessions and automatically update webpage available under
+# (http://<ipaddress>/session)
+#-------------------------------------------------------------------------------
+# Author:
+#           jayanatl@gmail.com
+# Modifications:
+#           jayanatl@gmail.com                  Initial copy        (2018-04-25)
+################################################################################
+# Variables
+loc="/tmp/jayan_setupScreenRecord"
+web_loc="sessions"
+
+# Check for normal user
 if [ ${EUID} -eq 0 ]; then
     echo "Error: Run this command as a normal user, with sudo access"
     exit 127
 fi
-loc="/tmp/jayan_setupScreenRecord"
-web_loc="sessions"
+
+# Create necessary folders
 mkdir ${loc}
 cd ${loc}
+
+# Install and configure httpd
 sudo yum -y install httpd
 sudo mkdir /var/www/html/${web_loc}
+
+# Download necessary code and configure
 git clone git@github.com:ysangkok/terminal_web_player.git
 sudo cp terminal_web_player/view.* /var/www/html/${web_loc}
 cp terminal_web_player/jsonify.py ~/workshop/bin/jsonify
@@ -19,5 +39,15 @@ grep 'PATH=$PATH:~/workshop/bin' ~/.bashrc || echo 'export PATH=$PATH:~/workshop
 export PATH=$PATH:~/workshop/bin
 wget https://raw.githubusercontent.com/jayanatl/setup_session_record/master/start_recording -O ~/workshop/bin/start_recording
 chmod u+x ~/workshop/bin/start_recording
+
+# Change terminal size
+sudo sed -i "s/Terminal(.*, .*)/Terminal(160, 48)/" /var/www/html/sessions/view.js
+
+# Start apache server
 sudo systemctl enable httpd
 sudo systemctl start httpd
+echo "Connect to following urls to access sessions:"
+
+for ipaddr in `ip a s|grep -w inet|awk '{print $2}'|cut -d'/' -f 1`; do
+    echo "    http://${ipaddr}/${web_loc}"
+done
