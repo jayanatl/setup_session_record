@@ -7,3 +7,6 @@ This script uses following repositories
 
 NOTE: Works only in Red Hat derivatives
 
+Dependancies
+- git
+- wget
