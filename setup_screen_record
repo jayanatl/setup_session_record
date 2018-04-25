@@ -29,7 +29,7 @@ sudo yum -y install httpd
 sudo mkdir /var/www/html/${web_loc}
 
 # Download necessary code and configure
-git clone git@github.com:ysangkok/terminal_web_player.git
+git clone https://github.com/ysangkok/terminal_web_player.git
 sudo cp terminal_web_player/view.* /var/www/html/${web_loc}
 cp terminal_web_player/jsonify.py ~/workshop/bin/jsonify
 chmod u+x ~/workshop/bin/jsonify
