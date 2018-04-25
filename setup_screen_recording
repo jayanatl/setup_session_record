@@ -23,8 +23,8 @@ sudo yum -y install httpd
 sudo mkdir -p /var/www/html/${web_loc}/.data
 
 # Download necessary code and configure
-cp -r session* /var/www/html/${web_loc}/
-touch /var/www/html/${web_loc}/index.html
+sudo cp -r view* /var/www/html/${web_loc}/
+sudo cp index.html /var/www/html/${web_loc}/index.html
 
 mkdir -p ~/workshop/{bin,sessions}
 grep 'PATH=$PATH:~/workshop/bin' ~/.bashrc || echo 'export PATH=$PATH:~/workshop/bin' >> ~/.bashrc

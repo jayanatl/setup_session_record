@@ -35,11 +35,11 @@ script -t${name}.t ${name}.s
 # Process session recording
 jsonify ${name}.s ${name}.t > ${name}
 [ -f ${name} ] && rm -f ${name}.{s,t}
-sudo cp ${name} ${web_loc}/.data
+sudo cp ${name} ${web_loc}/.data/
 
 # Publish session recording
 cp ${web_loc}/index.html .
 touch index.html
-echo "<br>Session: ${name} <a href=\"sessions/view.html?${name}\">SimpleViewer</a> <a href=\"sessions_ctrl/view.html?${name}\">WithControls</a>  >> index.html
+echo "<br>Session: ${name} <a href=\"sessions/view.html?${name}\">SimpleViewer</a> <a href=\"sessions_ctrl/view.html?${name}\">WithControls</a>"  >> index.html
 sudo cp index.html ${web_loc}/index.html
 popd
