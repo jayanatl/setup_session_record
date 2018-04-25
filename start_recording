@@ -22,7 +22,7 @@ which jsonify || { echo "Error: Unable to locate jsonify"; exit 127; }
 # set terminal properties
 pushd ~/workshop/sessions || { echo "Error: Unable to switch to workshop directory"; exit 127; }
 while [[ `tput cols` != ${term_cols} || `tput lines` != ${term_lines} ]]; do
-    read -p "Resize terminal to 80x24. Press Enter to continue..."
+    read -p "Resize terminal to ${term_cols}x${term_lines}. Press Enter to continue..."
     watch "tput cols; tput lines"
 done
 
