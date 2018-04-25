@@ -140,7 +140,7 @@ function getLog(target) {
 
   $.ajax({
     type: "GET",
-    url: "../.data/" + target,
+    url: ".data/" + target,
     dataType: "json",
     async: true,
     success: receivedLog,
