@@ -28,14 +28,14 @@ done
 # Start script session
 read -p "Enter name of the session: " name
 echo "Name read: ${name}"
-[ -z ${name} ] && { echo "Error: Session name cannot be empty"; exit 127; }
-[ -f ${name} ] && { echo "Error: File exist with same name"; exit 127; }
+[ -z ${web_loc}/.data/${name} ] && { echo "Error: Session name cannot be empty"; exit 127; }
+[ -f ${web_loc}/.data/${name} ] && { echo "Error: File exist with same name"; exit 127; }
 script -t${name}.t ${name}.s
 
 # Process session recording
 jsonify ${name}.s ${name}.t > ${name}
-[ -f ${name} ] && rm -f ${name}.{s,t}
 sudo cp ${name} ${web_loc}/.data/
+[ -f ${web_loc}/.data/${name} ] && rm -f ${name}*
 
 # Publish session recording
 cp ${web_loc}/index.html .
