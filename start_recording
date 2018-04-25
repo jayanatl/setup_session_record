@@ -1,17 +1,26 @@
 #!/bin/bash
+web_loc="sessions"
+web_loc="/var/www/html/"${web_loc}
+which jsonify || { echo "Error: Unable to locate jsonify"; exit 127; }
+
 pushd ~/workshop/sessions
 while [[ `tput cols` != "80" || `tput lines` != "24" ]]; do
     read -p "Resize terminal to 80x24. Press Enter to continue..."
     watch "tput cols; tput lines"
 done
 read -p "Enter name of the session: " name
-[[ -z ${name} ]] && { echo "Error Session name cannot be empty"}
+echo "Name read: ${name}"
+[ -z ${name} ] && { echo "Error: Session name cannot be empty"; exit 127; }
 [ -f ${name} ] && { echo "Error: File exist with same name"; exit 127; }
 script -t${name}.t ${name}.s
 
-jsonify.py ${name}.s ${name}.t > ${name}
-if [ -f ${name} ] && rm -f ${name}.{s,t}
+jsonify ${name}.s ${name}.t > ${name}
+[ -f ${name} ] && rm -f ${name}.{s,t}
+sudo mv ${name} ${web_loc}/
 
 # append entry to index.html
-# cleanup
-# popd
+cp ${web_loc}/index.html .
+touch index.html
+echo "<br><a href=\"view.html?${name}\">${name}</a>" >> index.html
+sudo cp index.html ${web_loc}/index.html
+popd

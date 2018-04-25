@@ -11,9 +11,11 @@ sudo yum -y install httpd
 sudo mkdir /var/www/html/${web_loc}
 git clone git@github.com:ysangkok/terminal_web_player.git
 sudo cp terminal_web_player/view.* /var/www/html/${web_loc}
+cp terminal_web_player/jsonify.py ~/workshop/bin/jsonify
+chmod u+x ~/workshop/bin/jsonify
 sudo wget https://raw.github.com/chjj/tty.js/d379c6f9/static/term.js -O /var/www/html/${web_loc}/term.js
 mkdir -p ~/workshop/{bin,sessions}
-grep 'PATH=$PATH:~/workshop/bin' ~/.bashrc || echo "export PATH=$PATH:~/workshop/bin" >> ~/.bashrc
+grep 'PATH=$PATH:~/workshop/bin' ~/.bashrc || echo 'export PATH=$PATH:~/workshop/bin' >> ~/.bashrc
 export PATH=$PATH:~/workshop/bin
 wget https://raw.githubusercontent.com/jayanatl/setup_session_record/master/start_recording -O ~/workshop/bin/start_recording
 chmod u+x ~/workshop/bin/start_recording
