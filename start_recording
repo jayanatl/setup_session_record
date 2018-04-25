@@ -40,6 +40,6 @@ sudo cp ${name} ${web_loc}/.data/
 # Publish session recording
 cp ${web_loc}/index.html .
 touch index.html
-echo "<br>Session: <a href=\"view.html?${name}\">${name}</a>"  >> index.html
+echo "<br>Session: <a href=\"view?${name}\">${name}</a>"  >> index.html
 sudo cp index.html ${web_loc}/index.html
 popd
